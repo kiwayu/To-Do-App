@@ -14,16 +14,19 @@ namespace ToDoApp
         private int nextTaskId = 1;
         
         // UI Controls
-        private ListView taskListView;
-        private ComboBox filterComboBox;
-        private ComboBox sortComboBox;
-        private Button addButton;
-        private Button editButton;
-        private Button deleteButton;
-        private Button toggleCompleteButton;
-        private Label statusLabel;
-        private GroupBox filterGroupBox;
-        private GroupBox actionGroupBox;
+        private ListView taskListView = null!;
+        private ComboBox filterComboBox = null!;
+        private ComboBox sortComboBox = null!;
+        private Button addButton = null!;
+        private Button editButton = null!;
+        private Button deleteButton = null!;
+        private Button toggleCompleteButton = null!;
+        private Button themeToggleButton = null!;
+        private Label statusLabel = null!;
+        private GroupBox filterGroupBox = null!;
+        private GroupBox actionGroupBox = null!;
+        
+        private bool isDarkMode = false;
         
         public MainForm()
         {
@@ -32,6 +35,9 @@ namespace ToDoApp
             filteredTasks = new List<TodoTask>();
             LoadSampleData();
             ApplyFiltersAndSort();
+            
+            // Apply theme after everything is initialized
+            ApplyTheme();
         }
         
         private void InitializeComponent()
@@ -89,7 +95,17 @@ namespace ToDoApp
             sortComboBox.SelectedIndex = 0;
             sortComboBox.SelectedIndexChanged += SortComboBox_SelectedIndexChanged;
             
-            filterGroupBox.Controls.AddRange([filterLabel, filterComboBox, sortLabel, sortComboBox]);
+            // Theme Toggle Button
+            themeToggleButton = new Button
+            {
+                Text = "🌙 Dark",
+                Location = new Point(380, 22),
+                Size = new Size(80, 23),
+                FlatStyle = FlatStyle.Flat
+            };
+            themeToggleButton.Click += ThemeToggleButton_Click;
+            
+            filterGroupBox.Controls.AddRange([filterLabel, filterComboBox, sortLabel, sortComboBox, themeToggleButton]);
             
             // Task ListView
             taskListView = new ListView
@@ -265,18 +281,22 @@ namespace ToDoApp
                 item.SubItems.Add(task.StatusText);
                 item.Tag = task;
                 
-                // Color coding
+                // Color coding based on theme
                 if (task.IsCompleted)
                 {
-                    item.ForeColor = Color.Gray;
+                    item.ForeColor = isDarkMode ? Color.FromArgb(120, 120, 120) : Color.Gray;
                 }
                 else if (task.IsOverdue)
                 {
-                    item.ForeColor = Color.Red;
+                    item.ForeColor = isDarkMode ? Color.FromArgb(255, 100, 100) : Color.Red;
                 }
                 else if (task.Priority == Priority.High || task.Priority == Priority.Critical)
                 {
-                    item.ForeColor = Color.DarkOrange;
+                    item.ForeColor = isDarkMode ? Color.FromArgb(255, 165, 0) : Color.DarkOrange;
+                }
+                else
+                {
+                    item.ForeColor = isDarkMode ? Color.White : Color.Black;
                 }
                 
                 taskListView.Items.Add(item);
@@ -292,18 +312,112 @@ namespace ToDoApp
             statusLabel.Text = $"Total: {totalTasks} | Completed: {completedTasks} | Overdue: {overdueTasks} | Showing: {filteredTasks.Count}";
         }
         
+        private void ApplyTheme()
+        {
+            try
+            {
+                if (isDarkMode)
+                {
+                    // Dark theme colors
+                    this.BackColor = Color.FromArgb(45, 45, 48);
+                    this.ForeColor = Color.White;
+                    
+                    if (taskListView != null)
+                    {
+                        taskListView.BackColor = Color.FromArgb(37, 37, 38);
+                        taskListView.ForeColor = Color.White;
+                    }
+                    
+                    if (filterGroupBox != null)
+                        ApplyControlTheme(filterGroupBox, Color.FromArgb(60, 60, 60), Color.White);
+                    if (actionGroupBox != null)
+                        ApplyControlTheme(actionGroupBox, Color.FromArgb(60, 60, 60), Color.White);
+                    
+                    if (themeToggleButton != null)
+                        themeToggleButton.Text = "☀️ Light";
+                }
+                else
+                {
+                    // Light theme colors
+                    this.BackColor = SystemColors.Control;
+                    this.ForeColor = SystemColors.ControlText;
+                    
+                    if (taskListView != null)
+                    {
+                        taskListView.BackColor = SystemColors.Window;
+                        taskListView.ForeColor = SystemColors.WindowText;
+                    }
+                    
+                    if (filterGroupBox != null)
+                        ApplyControlTheme(filterGroupBox, SystemColors.Control, SystemColors.ControlText);
+                    if (actionGroupBox != null)
+                        ApplyControlTheme(actionGroupBox, SystemColors.Control, SystemColors.ControlText);
+                    
+                    if (themeToggleButton != null)
+                        themeToggleButton.Text = "🌙 Dark";
+                }
+                
+                // Only refresh if we have filtered tasks
+                if (filteredTasks != null)
+                    RefreshTaskList(); // Refresh to apply color coding with new theme
+            }
+            catch (Exception ex)
+            {
+                // Silently ignore theme application errors during initialization
+                System.Diagnostics.Debug.WriteLine($"Theme application error: {ex.Message}");
+            }
+        }
+        
+        private void ApplyControlTheme(Control parent, Color backColor, Color foreColor)
+        {
+            parent.BackColor = backColor;
+            parent.ForeColor = foreColor;
+            
+            foreach (Control control in parent.Controls)
+            {
+                if (control is Button button)
+                {
+                    button.BackColor = isDarkMode ? Color.FromArgb(70, 70, 70) : SystemColors.ButtonFace;
+                    button.ForeColor = foreColor;
+                    button.FlatStyle = FlatStyle.Flat;
+                    button.FlatAppearance.BorderColor = isDarkMode ? Color.FromArgb(100, 100, 100) : SystemColors.ButtonShadow;
+                }
+                else if (control is ComboBox comboBox)
+                {
+                    comboBox.BackColor = isDarkMode ? Color.FromArgb(60, 60, 60) : SystemColors.Window;
+                    comboBox.ForeColor = foreColor;
+                }
+                else if (control is TextBox textBox)
+                {
+                    textBox.BackColor = isDarkMode ? Color.FromArgb(60, 60, 60) : SystemColors.Window;
+                    textBox.ForeColor = foreColor;
+                }
+                else
+                {
+                    control.BackColor = backColor;
+                    control.ForeColor = foreColor;
+                }
+            }
+        }
+        
         // Event Handlers
-        private void FilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void ThemeToggleButton_Click(object? sender, EventArgs e)
+        {
+            isDarkMode = !isDarkMode;
+            ApplyTheme();
+        }
+        
+        private void FilterComboBox_SelectedIndexChanged(object? sender, EventArgs e)
         {
             ApplyFiltersAndSort();
         }
         
-        private void SortComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void SortComboBox_SelectedIndexChanged(object? sender, EventArgs e)
         {
             ApplyFiltersAndSort();
         }
         
-        private void TaskListView_SelectedIndexChanged(object sender, EventArgs e)
+        private void TaskListView_SelectedIndexChanged(object? sender, EventArgs e)
         {
             bool hasSelection = taskListView.SelectedItems.Count > 0;
             editButton.Enabled = hasSelection;
@@ -311,28 +425,26 @@ namespace ToDoApp
             toggleCompleteButton.Enabled = hasSelection;
         }
         
-        private void AddButton_Click(object sender, EventArgs e)
+        private void AddButton_Click(object? sender, EventArgs e)
         {
-            using (var dialog = new TaskDialog())
+            using var dialog = new TaskDialog();
+            if (dialog.ShowDialog() == DialogResult.OK && dialog.Task != null)
             {
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    var newTask = dialog.Task;
-                    newTask.Id = nextTaskId++;
-                    tasks.Add(newTask);
-                    ApplyFiltersAndSort();
-                }
+                var newTask = dialog.Task;
+                newTask.Id = nextTaskId++;
+                tasks.Add(newTask);
+                ApplyFiltersAndSort();
             }
         }
         
-        private void EditButton_Click(object sender, EventArgs e)
+        private void EditButton_Click(object? sender, EventArgs e)
         {
             if (taskListView.SelectedItems.Count == 0) return;
             
-            var selectedTask = (TodoTask)taskListView.SelectedItems[0].Tag;
-            using (var dialog = new TaskDialog(selectedTask))
+            if (taskListView.SelectedItems[0].Tag is TodoTask selectedTask)
             {
-                if (dialog.ShowDialog() == DialogResult.OK)
+                using var dialog = new TaskDialog(selectedTask);
+                if (dialog.ShowDialog() == DialogResult.OK && dialog.Task != null)
                 {
                     var editedTask = dialog.Task;
                     var index = tasks.FindIndex(t => t.Id == selectedTask.Id);
@@ -347,34 +459,38 @@ namespace ToDoApp
             }
         }
         
-        private void DeleteButton_Click(object sender, EventArgs e)
+        private void DeleteButton_Click(object? sender, EventArgs e)
         {
             if (taskListView.SelectedItems.Count == 0) return;
             
-            var selectedTask = (TodoTask)taskListView.SelectedItems[0].Tag;
-            var result = MessageBox.Show(
-                $"Are you sure you want to delete the task '{selectedTask.Title}'?",
-                "Confirm Delete",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-            
-            if (result == DialogResult.Yes)
+            if (taskListView.SelectedItems[0].Tag is TodoTask selectedTask)
             {
-                tasks.RemoveAll(t => t.Id == selectedTask.Id);
-                ApplyFiltersAndSort();
+                var result = MessageBox.Show(
+                    $"Are you sure you want to delete the task '{selectedTask.Title}'?",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+                
+                if (result == DialogResult.Yes)
+                {
+                    tasks.RemoveAll(t => t.Id == selectedTask.Id);
+                    ApplyFiltersAndSort();
+                }
             }
         }
         
-        private void ToggleCompleteButton_Click(object sender, EventArgs e)
+        private void ToggleCompleteButton_Click(object? sender, EventArgs e)
         {
             if (taskListView.SelectedItems.Count == 0) return;
             
-            var selectedTask = (TodoTask)taskListView.SelectedItems[0].Tag;
-            var index = tasks.FindIndex(t => t.Id == selectedTask.Id);
-            if (index >= 0)
+            if (taskListView.SelectedItems[0].Tag is TodoTask selectedTask)
             {
-                tasks[index].IsCompleted = !tasks[index].IsCompleted;
-                ApplyFiltersAndSort();
+                var index = tasks.FindIndex(t => t.Id == selectedTask.Id);
+                if (index >= 0)
+                {
+                    tasks[index].IsCompleted = !tasks[index].IsCompleted;
+                    ApplyFiltersAndSort();
+                }
             }
         }
     }

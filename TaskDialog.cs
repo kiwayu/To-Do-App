@@ -6,24 +6,24 @@ namespace ToDoApp
 {
     public partial class TaskDialog : Form
     {
-        public TodoTask Task { get; private set; }
+        public TodoTask? Task { get; private set; }
         
         // UI Controls
-        private TextBox titleTextBox;
-        private TextBox descriptionTextBox;
-        private DateTimePicker dueDatePicker;
-        private CheckBox noDueDateCheckBox;
-        private ComboBox priorityComboBox;
-        private TextBox categoryTextBox;
-        private CheckBox isCompletedCheckBox;
-        private Button okButton;
-        private Button cancelButton;
+        private TextBox titleTextBox = null!;
+        private TextBox descriptionTextBox = null!;
+        private DateTimePicker dueDatePicker = null!;
+        private CheckBox noDueDateCheckBox = null!;
+        private ComboBox priorityComboBox = null!;
+        private TextBox categoryTextBox = null!;
+        private CheckBox isCompletedCheckBox = null!;
+        private Button okButton = null!;
+        private Button cancelButton = null!;
         
         public TaskDialog() : this(null)
         {
         }
         
-        public TaskDialog(TodoTask existingTask)
+        public TaskDialog(TodoTask? existingTask)
         {
             InitializeComponent();
             
@@ -211,12 +211,12 @@ namespace ToDoApp
             isCompletedCheckBox.Checked = task.IsCompleted;
         }
         
-        private void NoDueDateCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void NoDueDateCheckBox_CheckedChanged(object? sender, EventArgs e)
         {
             dueDatePicker.Enabled = !noDueDateCheckBox.Checked;
         }
         
-        private void OkButton_Click(object sender, EventArgs e)
+        private void OkButton_Click(object? sender, EventArgs e)
         {
             // Validate input
             if (string.IsNullOrWhiteSpace(titleTextBox.Text))
