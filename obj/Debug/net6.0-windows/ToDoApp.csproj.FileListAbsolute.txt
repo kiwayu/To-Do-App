@@ -1,0 +1,14 @@
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.AssemblyInfoInputs.cache
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.AssemblyInfo.cs
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.csproj.CoreCompileInputs.cache
+C:\Users\hpc09\Desktop\PROJECTS\to-do\bin\Debug\net6.0-windows\ToDoApp.exe
+C:\Users\hpc09\Desktop\PROJECTS\to-do\bin\Debug\net6.0-windows\ToDoApp.deps.json
+C:\Users\hpc09\Desktop\PROJECTS\to-do\bin\Debug\net6.0-windows\ToDoApp.runtimeconfig.json
+C:\Users\hpc09\Desktop\PROJECTS\to-do\bin\Debug\net6.0-windows\ToDoApp.dll
+C:\Users\hpc09\Desktop\PROJECTS\to-do\bin\Debug\net6.0-windows\ToDoApp.pdb
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.dll
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\refint\ToDoApp.dll
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.pdb
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ToDoApp.genruntimeconfig.cache
+C:\Users\hpc09\Desktop\PROJECTS\to-do\obj\Debug\net6.0-windows\ref\ToDoApp.dll
